@@ -21,12 +21,13 @@ import java.util.List;
 public class Users implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long user_id;
     @Column(unique = true, nullable = false)
     @Email
     private String username;
 
     private String password;
+    private String fcmToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -108,12 +108,11 @@ public class UserController {
         if (token == null || !jwtTokenUtil.validateToken(token) || authTokenService.isTokenRevoked(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
-
         String username = jwtTokenUtil.getUsernameFromToken(token);
         Users user = userRepository.findByUsername(username).orElse(null);
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
 
         authTokenService.revokeToken(token);
