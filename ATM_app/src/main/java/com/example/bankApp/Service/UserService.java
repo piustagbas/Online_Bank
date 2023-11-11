@@ -10,5 +10,9 @@ public interface UserService {
 
     ResponseEntity<?> authenticateUser(LoginRequest loginRequest);
 
+    Users getUserById(Long userId);
+
     Users email(String email) throws MessagingException;
+    void registerFcmToken(Long userId, String fcmToken);
+
 }

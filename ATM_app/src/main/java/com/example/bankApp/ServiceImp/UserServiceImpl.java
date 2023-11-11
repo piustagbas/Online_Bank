@@ -7,6 +7,7 @@ import com.example.bankApp.Service.UserService;
 import com.example.bankApp.dto.JwtResponse;
 import com.example.bankApp.dto.LoginRequest;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,7 @@ public ResponseEntity<?> registerUser(String username, String password) throws E
     Users user = new Users();
     user.setUsername(username);
     user.setPassword(hashedPassword);
+    user.setFcmToken(user.getFcmToken());
     userRepository.save(user);
 
     return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful.");
@@ -88,12 +90,25 @@ public ResponseEntity<?> registerUser(String username, String password) throws E
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
     }
+@Override
+    public Users getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
     @Override
     public Users email(String email) throws MessagingException {
         Users users = new Users();
         users.setUsername(email);
         mailService.sendEmail(email, EmailServiceImpl.CONTENT, EmailServiceImpl.SUBJECT);
         return users;
+    }
+
+    @Override
+    public void registerFcmToken(Long userId, String fcmToken) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        user.setFcmToken(fcmToken);
+        userRepository.save(user);
     }
 
 }
